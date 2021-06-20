@@ -10,7 +10,7 @@ struct state{
     char ins[10];
     char s[10];
     int add;
-    int oc;
+    double oc;
 }S[100];
 
 void disect(char line[], struct state *s){
@@ -58,7 +58,7 @@ void pass1(struct state *s, int n){
      {     
         loc = atoi(s[0].s);
         s[1].add = loc;
-        s[0].add = loc;
+        s[0].add = loc;       
      }
         else{
         printf("No start location for the program.");        
@@ -111,6 +111,40 @@ void pass1(struct state *s, int n){
 }
 
 
+void pass2(struct state *s, int n){
+    int i;
+    char symbol[10];
+    for(i=1; i<n; i++)
+    {   int j=1;
+        while(strcmp(s[i].s, s[j].l)!=0 && j<n)
+        {
+            j++;
+        }
+        if(j>n)
+        {
+
+        }
+        else{
+           //do something
+        }
+    }
+}
+
+void createSymtab(struct state s[], int n){
+    int i;
+    FILE *f = fopen("symtab.txt", "w");
+    
+    for(i=1; i<n; i++)
+    {
+        if(strcmp(s[i].l,"**")!=0)
+        {
+            fprintf(f, "%d\t%s\n", s[i].add, s[i].l);
+        }
+    }
+    fclose(f);
+}
+
+
 
 void display(struct state s[], int n){
     int i;
@@ -130,5 +164,7 @@ int main(){
         n++;
     }
     pass1(S, n);
+    // pass2(S, n);
+    createSymtab(S, n);
     display(S, n);
 }
