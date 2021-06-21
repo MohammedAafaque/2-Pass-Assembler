@@ -58,14 +58,18 @@ void disect(char line[], struct state *s){
 }
 
 void pass1(struct state *s, int n){
-    int i,loc;
+    int i,loc, st;
     char start[10] = "START";
     if(strcmp(s[0].ins, "START")==0)
      {     
-        loc = atoi(s[0].s);
+        FILE *f1 = fopen("startaddress.txt", "r");
+        fscanf(f1, "%x", &st);
+        loc = st;
         s[1].add = loc;
-        s[0].add = loc;       
+        s[0].add =loc;
+
      }
+     
         else{
         printf("No start location for the program.");        
         }
@@ -144,7 +148,7 @@ void createSymtab(struct state s[], int n){
     {
         if(strcmp(s[i].l,"**")!=0)
         {
-            fprintf(f, "%d\t%s\n", s[i].add, s[i].l);
+            fprintf(f, "%x\t%s\n", s[i].add, s[i].l);
         }
     }
     fclose(f);
@@ -204,15 +208,22 @@ void display(struct state s[], int n){
     int i,j;
     for(i=0;i<n;i++)
     {
-        printf("%d\t%s\t%s\t%s",s[i].add, s[i].l, s[i].ins, s[i].s);
+        printf("%x\t%s\t%s\t%s",s[i].add, s[i].l, s[i].ins, s[i].s);
     }
+}
+void input(){
+    
 }
 
 
-
 int main(){
+    int start;
+    // printf("Enter the starting address");
+    // scanf("%X", start);
+    // printf("%X", start);
     int n=0;
     char line[100];
+    
     FILE *f = fopen("input.txt", "r");
     while(fgets(line, 100, f))
     {   
