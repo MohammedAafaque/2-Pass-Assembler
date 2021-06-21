@@ -13,6 +13,12 @@ struct state{
     double oc;
 }S[100];
 
+struct opcode{
+    char m[5];
+    char val[2];
+    int ind;
+}O[100];
+
 void disect(char line[], struct state *s){
     int i, j=0, k=0;
     for(i=0; i<strlen(line); i++)
@@ -144,15 +150,65 @@ void createSymtab(struct state s[], int n){
     fclose(f);
 }
 
+void disect2(char line[], struct opcode *o){
+    int i, j=0;
+    for(i=0; i<strlen(line); i++)
+    {   if(line[i]!=' ')
+        o->m[i]=line[i];
+        else
+        break;
+    }
+    i++;
+    for(; i<strlen(line); i++)
+    {
+        if(line[i]!=' ')
+        {o->val[j]=line[i];
+         j++;
+        }
+        else
+        break;
+    }
+}
 
+void createOptab(struct state s[], int n){
+    char line[10];
+    int m=0, j, i;
+    FILE *f1 = fopen("opcodes.txt", "r");
+    FILE *f2 = fopen("optab.txt", "w");
+    while(fgets(line, 10, f1))
+    {
+        disect2(line, &O[m]);
+        m++;
+    }
+
+    for(i=0; i<n; i++)
+    {
+        for(j=0; j<m; j++)
+        {
+            if(strcmp(s[i].ins, O[j].m)==0)
+            {
+                fprintf(f2, "%s\t%s" ,O[j].m, O[j].val);
+                
+            }
+            else{
+
+            }
+        }
+    }
+    fclose(f1);
+    fclose(f2);
+
+}
 
 void display(struct state s[], int n){
-    int i;
+    int i,j;
     for(i=0;i<n;i++)
     {
         printf("%d\t%s\t%s\t%s",s[i].add, s[i].l, s[i].ins, s[i].s);
     }
 }
+
+
 
 int main(){
     int n=0;
@@ -166,5 +222,6 @@ int main(){
     pass1(S, n);
     // pass2(S, n);
     createSymtab(S, n);
+    createOptab(S,n);
     display(S, n);
 }
