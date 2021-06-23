@@ -11,6 +11,7 @@ struct state{
     char s[10];
     int add;
     int oc;
+    int flag=0;
 }S[100];
 
 struct opcode{
@@ -21,6 +22,7 @@ struct opcode{
 
 void disect(char line[], struct state *s){
     int i, j=0, k=0,len=strlen(line);
+    char *ret;
     for(i=0; i<len; i++)
     {
        if(line[i]!=' ')
@@ -44,18 +46,33 @@ void disect(char line[], struct state *s){
        }
     }
     i++;
-    for(; i<len; i++)
-    { 
-       if(line[i]!=' ')
-       {
-           s->s[k] = line[i];
-           k++;
-       }
-       else{
-           break;
-       }
+    ret = strstr(line,",X");
+    if(ret)
+    {   
+        s->flag = 1;
+        while(line[i]!=',')
+        {
+            s->s[k] = line[i];
+            i++;
+            k++;
+        }
+    }
+    else {
+        for(; i<len; i++)
+        { 
+            if(line[i]!=' ')
+            {
+                s->s[k] = line[i];
+                k++;
+            }
+        else{
+            break;
+            }
+        }
     }
 }
+
+
 
 void pass1(struct state *s, int n){
     int i,loc, st;
@@ -169,9 +186,7 @@ void pass2(struct state *s, int n){
 		else
 		{
 			int j=0, k=0, sop, val, vbit;
-			char *ret, bit[5], temp[4], source[10], destination[10];
-            // char t[10];
-            // t = s[k].l;
+			char bit[5], temp[4], source[10], destination[10];
 			while(strcmp(instruction, O[j].m)!=0)
 			{
 				j++;
@@ -185,8 +200,9 @@ void pass2(struct state *s, int n){
             sop = s[k].add;
             itoa(sop, source, 16);
 
-			ret = strstr(symbol, ",X");
-			if(ret)
+			
+
+            if(s[i].flag==1)
 			{
 				bit[0]=source[0];
 				vbit = (int)strtol(bit, NULL, 16);
@@ -258,7 +274,7 @@ void createOptab(struct state s[], int n){
         {
             if(strcmp(s[i].ins, O[j].m)==0)
             {
-                fprintf(f2, "%s\t%s" ,O[j].m, O[j].val);
+                fprintf(f2, "%s\t%s\n" ,O[j].m, O[j].val);
                 
             }
             else{
