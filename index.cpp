@@ -167,15 +167,18 @@ void pass2(struct state *s, int n){
 				}
 				else if(symbol[0] == 'X')
 				{
-					int j=2,k=0,val;
-					char dev[10];
+					int j=2,z=0,val;
+					char d[2];
 					while(symbol[j]!='\'')
 					{
-						dev[k] = symbol[j];
-						k++;
+						d[z] = symbol[j];
+                        // printf("%s\n", d);
+						z++;
 						j++;
 					}
-					val = (int)strtol(dev,NULL,16);
+                    
+					val = (int)strtol(d,NULL,16);
+                    
 					s[i].oc=val;
 				}
 		}
@@ -183,6 +186,17 @@ void pass2(struct state *s, int n){
 		{
 			s[i].oc = -0x1;
 		}
+        else if((strcmp(instruction, "END")!=0) && (strcmp(symbol, "****")==0))
+        {   int r=0, val;
+            char dest[10];
+            while(strcmp(instruction, O[r].m)!=0)
+			{
+				r++;
+			}
+            strcpy(dest, O[r].val);
+            val = (int)strtol(dest, NULL, 16);
+            s[i].oc = val;
+        }
 		else
 		{
 			int j=0, k=0, sop, val, vbit;
@@ -287,8 +301,10 @@ void createOptab(struct state s[], int n){
 
 }
 
+
 void display(struct state s[], int n){
     int i;
+    char *ret;
     for(i=0;i<n;i++)
     if((strcmp(s[i].ins, "START")==0) || (strcmp(s[i].ins, "END")==0) || (strcmp(s[i].ins, "RESW")==0) || (strcmp(s[i].ins, "RESB")==0)) 
     {
@@ -302,11 +318,67 @@ void display(struct state s[], int n){
         printf("%x\t", s[i].add);
         printf("%s\t", s[i].l);
         printf("%s\t", s[i].ins);
-        printf("%s\t", s[i].s);
-        printf("%06x\n",s[i].oc);
+        if(s[i].flag==1)
+        { printf("%s,X\t", s[i].s);
+        }
+        else{
+            printf("%s\t", s[i].s);
+        }
+        ret = strstr(s[i].s, "X'");
+        if(ret)
+        { printf("%02x\n",s[i].oc);
+        }
+        else
+        {
+            printf("%06x\n",s[i].oc);
+        }
     }
 }
 
+void objectProgram(struct state S[], int n){
+    //n=13
+    
+    int n1=n, i=0, K[10], z=0, f, l, val, m, c=0;
+    int len = S[n-1].add - S[0].add;
+    printf("H^%s^%06x^%06x\n", S[0].l,S[0].add, len);
+    while(n>0)
+    {
+        int j=0, c=0, z=0;
+        printf("T");
+        while((S[i].oc!=-0x1) && (j<10) && (i<n1))
+        {
+            K[z]=i;
+            i++;
+            j++;
+            c++;
+            z++; 
+        }        
+        f = S[K[0]].add;
+        l = S[K[c-1]].add;
+        val = l-f;
+        printf("^%06x^%02x", f, val);
+        for(m=0; m<c; m++)
+        {
+            printf("^%06x", S[K[m]].oc);
+        }
+        printf("\n");
+        if(S[i].oc == -0x1)
+        {
+            do{
+                i++;
+                c++;
+            }while(S[i].oc==-0x1);
+        }
+        else if(i>=n1)
+        {
+            n=n-c;
+            break;
+        }
+        n=n-c;
+    }
+    printf("E^%06x", S[1].add);
+    
+}
 
 
 
@@ -323,7 +395,13 @@ int main(){
     createSymtab(S, n);
     createOptab(S,n);
     pass2(S, n);
+    printf("THE FULL PROGRAM\n");
+    printf("==============================\n");
     display(S, n);
+    printf("==============================\n");
+    printf("\nTHE OBJECT POGRAM\n");
+    objectProgram(S, n);
+    printf("\n==============================\n\n\n");
 }
 
 
