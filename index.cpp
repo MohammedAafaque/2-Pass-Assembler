@@ -1,3 +1,5 @@
+
+  
 #include<stdio.h>
 #include<conio.h>
 #include<stdlib.h>
@@ -77,7 +79,7 @@ void disect(char line[], struct state *s){
 void pass1(struct state *s, int n){
     int i,loc, st;
     if(strcmp(s[0].ins, "START")==0)
-     {     
+     {  
         FILE *f1 = fopen("startaddress.txt", "r");
         fscanf(f1, "%x", &st);
         loc = st;
@@ -354,12 +356,17 @@ void objectProgram(struct state S[], int n){
             z++; 
         }        
         f = S[K[0]].add;
-        l = S[K[c-1]].add;
+        l = S[K[c-1]+1].add;
         val = l-f;
         printf("^%06x^%02x", f, val);
         for(m=0; m<c; m++)
         {
-            printf("^%06x", S[K[m]].oc);
+            char *r1;
+			r1 = strstr(S[K[m]].s, "X'");
+			if(r1)
+            {printf("^%02x", S[K[m]].oc);}
+            else
+            {printf("^%06x", S[K[m]].oc);}
         }
         printf("\n");
         if(S[i].oc == -0x1)
@@ -403,5 +410,6 @@ int main(){
     objectProgram(S, n);
     printf("\n==============================\n\n\n");
 }
+
 
 
