@@ -191,11 +191,13 @@ void pass2(struct state *s, int n){
         else if((strcmp(instruction, "END")!=0) && (strcmp(symbol, "****")==0))
         {   int r=0, val;
             char dest[10];
+            char source[] = "0000";
             while(strcmp(instruction, O[r].m)!=0)
 			{
 				r++;
 			}
             strcpy(dest, O[r].val);
+            strcat(dest, source);
             val = (int)strtol(dest, NULL, 16);
             s[i].oc = val;
         }
@@ -338,12 +340,12 @@ void display(struct state s[], int n){
 }
 
 void objectProgram(struct state S[], int n){
-    //n=13
+    //n=14
     
-    int n1=n, i=0, K[10], z=0, f, l, val, m, c=0;
+    int n1=n, i=1, K[10], z=0, f, l, val, m, c=0;
     int len = S[n-1].add - S[0].add;
     printf("H^%s^%06x^%06x\n", S[0].l,S[0].add, len);
-    while(n>0)
+    while(n>1)
     {
         int j=0, c=0, z=0;
         printf("T");
@@ -410,6 +412,3 @@ int main(){
     objectProgram(S, n);
     printf("\n==============================\n\n\n");
 }
-
-
-
